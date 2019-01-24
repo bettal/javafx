@@ -34,6 +34,7 @@ public class ClientHandler {
                             if (newNick != null) {
                                 sendMsg("/authok " + newNick);
                                 nick = newNick;
+//                                 нужно хранить пару clienthandler, nick
                                 server.subscribe(this);
                                 break;
                             } else {
