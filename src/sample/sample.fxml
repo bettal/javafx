@@ -1,0 +1,30 @@
+<?scenebuilder-stylesheet /css/style?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<VBox fx:controller="sample.Controller"
+      xmlns:fx="http://javafx.com/fxml" alignment="center" >
+
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+
+    <HBox fx:id="upperPanel">
+        <TextField fx:id="loginField" HBox.hgrow="ALWAYS" promptText="Логин"/>
+        <PasswordField fx:id="passwordField" HBox.hgrow="ALWAYS" promptText="Пароль" onAction="#tryToAuth"/>
+    <Button text="Авториз" onAction="#tryToAuth"/>
+    </HBox>
+
+    <TextArea fx:id="textArea" VBox.vgrow="ALWAYS" editable="false"/>
+
+    <HBox fx:id="bottomPanel" managed="false" visible="false">
+        <TextField fx:id="textField" HBox.hgrow="ALWAYS"
+                   promptText="Введите текст сюда" onAction="#sendMsg"/>
+        <Button fx:id="button" text="Send" onAction="#sendMsg"/>
+    </HBox>
+
+</VBox>
+        <!--<GridPane fx:controller="sample.Controller"-->
+        <!--xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">-->
+        <!--</GridPane>-->
