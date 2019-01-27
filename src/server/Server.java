@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Server {
@@ -21,15 +20,15 @@ public class Server {
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен!");
 
-            while(true){
+            while (true) {
                 socket = server.accept();
                 System.out.println("Клиент подключился! ");
-                new ClientHandler(this,socket);
+                new ClientHandler(this, socket);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 socket.close();
             } catch (IOException e) {
@@ -43,29 +42,53 @@ public class Server {
             AuthService.disconnect();
         }
     }
-    public void broadcastMsg(String msg){
-        for (ClientHandler c: clients){
-            c.sendMsg(msg);
-        }
 
-    }
-// вещание на конкретного клиента
-    public void broadcastMsg(String msg,ClientHandler clientHandler){
-        //System.out.println(clientHandler);
-        for (ClientHandler c: clients){
-            if (clientHandler == c){
-                c.sendMsg(msg);
-                break;
+    public boolean isNickAuthorized(String nick) {
+        boolean isAuth = false;
+        for (ClientHandler c : clients) {
+            if (c.getNick().equals(nick)) {
+                isAuth = true;
             }
         }
+        return isAuth;
+    }
+
+    public void broadcastMsg(String msg, String sender) {
+        for (ClientHandler c : clients) {
+            c.sendMsg(sender + ": " + msg);
+        }
 
     }
 
-    public void subscribe(ClientHandler clientHandler){
+    // вещание на конкретного клиента
+    public void broadcastMsg(String msg, String sender, String receiver) {
+        for (ClientHandler c : clients) {
+            if (c.getNick().equals(receiver) || c.getNick().equals(sender))
+                c.sendMsg("private [" + sender + "] to [" + sender + "]" + msg);
+        }
+
+    }
+
+    public void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
+        broadcastClientList();
     }
 
-    public void unsubscribe(ClientHandler clientHandler){
+    public void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        broadcastClientList();
+    }
+
+    public void broadcastClientList() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("/clientlist ");
+
+        for (ClientHandler c : clients) {
+            sb.append(c.getNick() + " ");
+        }
+        String msg = sb.toString();
+        for (ClientHandler c : clients) {
+            c.sendMsg(msg);
+        }
     }
 }

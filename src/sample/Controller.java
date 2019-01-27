@@ -1,17 +1,18 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
 public class Controller {
@@ -30,6 +31,8 @@ public class Controller {
     TextField loginField;
     @FXML
     PasswordField passwordField;
+    @FXML
+    ListView<String> clientList;
 
     private boolean isAuthorized;
 
@@ -39,7 +42,7 @@ public class Controller {
 
     final String IP_ADRESS = "localhost";
     final int PORT = 8189;
-    public String newNick;
+//    public String newNick;
 
 
     public void setAuthorized(boolean isAuthorized) {
@@ -49,11 +52,15 @@ public class Controller {
             upperPanel.setVisible(false);
             bottomPanel.setManaged(true);
             bottomPanel.setVisible(true);
+            clientList.setManaged(true);
+            clientList.setVisible(true);
         } else {
             upperPanel.setManaged(true);
             upperPanel.setVisible(true);
             bottomPanel.setManaged(false);
             bottomPanel.setVisible(false);
+            clientList.setManaged(false);
+            clientList.setVisible(false);
         }
 
     }
@@ -71,20 +78,39 @@ public class Controller {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            if (str.startsWith("/authok")) {
+                            Thread t1 = new Thread();
+                            Thread t2 = new Thread();
+                            t1.start();
+                            t2{if (str.startsWith("/authok")) {
                                 setAuthorized(true);
                                 break;
                             }
-                            textArea.appendText(str + "\n");
+
+                                textArea.appendText(str + "\n");}
+
+
                         }
 
                         while (true) {
                             String str = in.readUTF();
-                            if (str.equals("/end")) {
-                                break;
-                            }
+                            if (str.startsWith("/")) {
+                                if (str.equals("/end")) {
+                                    break;
+                                }
+                                if (str.startsWith("/clientlist")) {
+                                    String tokens [] = str.split(" ");
+                                    Platform.runLater(() -> {
+                                        clientList.getItems().clear();
+                                        for (int i = 1; i < tokens.length ; i++) {
+                                            clientList.getItems().add(tokens[i]);
+                                        }
+                                    });
 
-                            textArea.appendText(str + "\n");
+                                }
+
+                            }else{
+                                textArea.appendText(str + "\n");
+                            }
                         }
 
                     } catch (IOException e) {
