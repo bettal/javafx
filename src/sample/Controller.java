@@ -3,7 +3,6 @@ package sample;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
@@ -11,12 +10,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 
 public class Controller {
 
+    final String IP_ADRESS = "localhost";
+    final int PORT = 8189;
     @FXML
     TextArea textArea;
     @FXML
@@ -33,18 +32,11 @@ public class Controller {
     PasswordField passwordField;
     @FXML
     ListView<String> clientList;
-
-    private boolean isAuthorized;
-
     Socket socket;
     DataInputStream in;
     DataOutputStream out;
-
-    final String IP_ADRESS = "localhost";
-    final int PORT = 8189;
+    private boolean isAuthorized;
 //    public String newNick;
-
-
 
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
@@ -67,7 +59,7 @@ public class Controller {
     }
 
 
-    public void connect(){
+    public void connect() {
         try {
             socket = new Socket(IP_ADRESS, PORT);
             in = new DataInputStream(socket.getInputStream());
@@ -79,28 +71,11 @@ public class Controller {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(120000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }finally{
-                                        if (isAuthorized() == false) break;
-                                    }
-                                }
-                            });
-                            Thread t2 = new Thread();
-
-                            t2{if (str.startsWith("/authok")) {
+                            if (str.startsWith("/authok")) {
                                 setAuthorized(true);
                                 break;
                             }
-
-                                textArea.appendText(str + "\n");}
-
-
+                            textArea.appendText(str + "\n");
                         }
 
                         while (true) {
@@ -110,17 +85,17 @@ public class Controller {
                                     break;
                                 }
                                 if (str.startsWith("/clientlist")) {
-                                    String tokens [] = str.split(" ");
+                                    String tokens[] = str.split(" ");
                                     Platform.runLater(() -> {
                                         clientList.getItems().clear();
-                                        for (int i = 1; i < tokens.length ; i++) {
+                                        for (int i = 1; i < tokens.length; i++) {
                                             clientList.getItems().add(tokens[i]);
                                         }
                                     });
 
                                 }
 
-                            }else{
+                            } else {
                                 textArea.appendText(str + "\n");
                             }
                         }
@@ -155,7 +130,7 @@ public class Controller {
     }
 
     public void tryToAuth(ActionEvent actionEvent) {
-        if((socket == null)||(socket.isClosed())){
+        if ((socket == null) || (socket.isClosed())) {
             connect();
         }
 
@@ -166,9 +141,5 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public boolean isAuthorized() {
-        return isAuthorized;
     }
 }
