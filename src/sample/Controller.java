@@ -78,7 +78,14 @@ public class Controller {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            Thread t1 = new Thread();
+                            Thread t1 = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Thread.sleep(120000);
+
+                                }
+                                break;
+                            });
                             Thread t2 = new Thread();
                             t1.start();
                             t2{if (str.startsWith("/authok")) {
