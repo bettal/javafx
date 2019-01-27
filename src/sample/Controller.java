@@ -70,6 +70,17 @@ public class Controller {
                 public void run() {
                     try {
                         while (true) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(120000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (!isAuthorized()) System.exit(0);
+                                }
+                            });
                             String str = in.readUTF();
                             if (str.startsWith("/authok")) {
                                 setAuthorized(true);
@@ -99,6 +110,7 @@ public class Controller {
                                 textArea.appendText(str + "\n");
                             }
                         }
+                        label:;
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -141,5 +153,9 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isAuthorized() {
+        return isAuthorized;
     }
 }
