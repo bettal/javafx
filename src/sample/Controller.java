@@ -45,6 +45,7 @@ public class Controller {
 //    public String newNick;
 
 
+
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
         if (isAuthorized) {
@@ -78,16 +79,20 @@ public class Controller {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            Thread t1 = new Thread(new Runnable() {
+                            new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Thread.sleep(120000);
-
+                                    try {
+                                        Thread.sleep(120000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }finally{
+                                        if (isAuthorized() == false) break;
+                                    }
                                 }
-                                break;
                             });
                             Thread t2 = new Thread();
-                            t1.start();
+
                             t2{if (str.startsWith("/authok")) {
                                 setAuthorized(true);
                                 break;
@@ -161,5 +166,9 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isAuthorized() {
+        return isAuthorized;
     }
 }
